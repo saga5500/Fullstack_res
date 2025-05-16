@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Authentication Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .auth-box {
+            flex: 1;
+            min-width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        input {
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .action-box {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        #response {
+            white-space: pre-wrap;
+            background-color: #f5f5f5;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-height: 100px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Basic Authentication Demo</h1>
+    
+    <div class="container">
+        <!-- Login Form -->
+        <div class="auth-box">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <input type="text" name="username" placeholder="Username" required>
+                <input type="password" name="password" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+        
+        <!-- Register Form -->
+        <div class="auth-box">
+            <h2>Register</h2>
+            <form id="registerForm">
+                <input type="text" name="username" placeholder="Username" required>
+                <input type="password" name="password" placeholder="Password" required>
+                <button type="submit">Register</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Protected Routes Test -->
+    <div class="action-box">
+        <h2>Test API Routes</h2>
+        <button id="profileBtn">Access Protected Profile Route</button>
+        <button id="publicBtn">Access Public Route</button>
+        <button id="logoutBtn">Logout</button>
+    </div>
+    
+    <!-- Response Display -->
+    <h3>Response:</h3>
+    <div id="response">Results will appear here...</div>
+    
+    <script>
+        // Base URL for API calls
+        const API_BASE = 'http://localhost:3001/api';
+        
+        // Response div for displaying results
+        const responseDiv = document.getElementById('response');
+        
+        // Helper function to display response
+        function displayResponse(data) {
+            if (typeof data === 'object') {
+                responseDiv.textContent = JSON.stringify(data, null, 2);
+            } else {
+                responseDiv.textContent = data;
+            }
+        }
+        
+        // Helper function for API calls
+        async function apiCall(endpoint, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include' // Important for cookies/session
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                const response = await fetch(`${API_BASE}${endpoint}`, options);
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(result.message || 'API call failed');
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('API Error:', error);
+                return { error: error.message };
+            }
+        }
+        
+        // Login form submit handler
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const username = this.elements.username.value;
+            const password = this.elements.password.value;
+            
+            const result = await apiCall('/auth/login', 'POST', { username, password });
+            displayResponse(result);
+        });
+        
+        // Register form submit handler
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const username = this.elements.username.value;
+            const password = this.elements.password.value;
+            
+            const result = await apiCall('/auth/register', 'POST', { username, password });
+            displayResponse(result);
+        });
+        
+        // Profile button click handler
+        document.getElementById('profileBtn').addEventListener('click', async function() {
+            const result = await apiCall('/profile');
+            displayResponse(result);
+        });
+        
+        // Public route button click handler
+        document.getElementById('publicBtn').addEventListener('click', async function() {
+            const result = await apiCall('/public');
+            displayResponse(result);
+        });
+        
+        // Logout button click handler
+        document.getElementById('logoutBtn').addEventListener('click', async function() {
+            const result = await apiCall('/auth/logout', 'POST');
+            displayResponse(result);
+        });
+    </script>
+</body>
+</html>

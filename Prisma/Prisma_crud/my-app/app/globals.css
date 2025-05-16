@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #69e9e2;
+  --foreground: #64d8c5;
+  --primary: #0ea5e9;
+  --primary-hover: #0284c7;
+}
+
+@layer base {
+  body {
+    @apply antialiased text-gray-900;
+  }
+  
+  input, select, textarea {
+    @apply focus:ring-2 focus:ring-indigo-500 focus:border-transparent;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0252ff;
+    --foreground: #e22525;
+  }
+}

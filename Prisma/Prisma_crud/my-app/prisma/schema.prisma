@@ -1,0 +1,24 @@
+// This section configures the Prisma Client generator
+generator client {
+  provider = "prisma-client-js"        // Uses the JavaScript Prisma Client
+  output   = "../app/generated/prisma" // Outputs the generated client to this directory
+  previewFeatures=["multiSchema"]      // Enables the multiSchema preview feature
+}
+
+// This section configures the database connection
+datasource db {
+  provider = "mysql"              // Using MySQL as the database
+  url      = env("DATABASE_URL")  // Database connection URL from environment variables
+}
+
+// This defines the User model/table in the database
+model User {
+  id        Int      @id @default(autoincrement())  // Primary key with auto-increment
+  email     String   @unique                        // Email must be unique
+  name      String                                  // User's name
+  createdAt DateTime @default(now())                // Automatically set to current time on creation
+  updatedAt DateTime @updatedAt                     // Automatically updated when record changes
+}
+
+
+

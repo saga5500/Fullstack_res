@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users - SecureAuth Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --primary-dark: #2980b9;
+            --secondary-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --success-color: #2ecc71;
+            --error-color: #e74c3c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .logo i {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: var(--primary-color);
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            color: var(--secondary-color);
+        }
+
+        .refresh-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+
+        .refresh-btn i {
+            margin-right: 0.5rem;
+        }
+
+        .refresh-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f1f5f9;
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        tr {
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:last-child {
+            border-bottom: none;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status.active {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: var(--success-color);
+        }
+
+        .status.inactive {
+            background-color: rgba(189, 195, 199, 0.1);
+            color: #7f8c8d;
+        }
+
+        .actions {
+            display: flex;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #7f8c8d;
+            transition: color 0.3s;
+            padding: 5px;
+        }
+
+        .action-btn:hover {
+            color: var(--primary-color);
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: #95a5a6;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            transform: translateX(150%);
+            transition: transform 0.5s ease;
+            z-index: 1000;
+        }
+
+        .notification.success {
+            background-color: var(--success-color);
+        }
+
+        .notification.error {
+            background-color: var(--error-color);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-lock"></i>
+            <span>SecureAuth</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/users.html" class="active">Users</a></li>
+                <li><a href="/login" id="logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="content-header">
+            <h1>Registered Users</h1>
+            <button class="refresh-btn" id="refresh-btn">
+                <i class="fas fa-sync-alt"></i>
+                Refresh
+            </button>
+        </div>
+
+        <div class="card">
+            <table id="users-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="users-body">
+                    <!-- User rows will be populated here -->
+                </tbody>
+            </table>
+            <div class="empty-state" id="empty-state" style="display: none;">
+                <i class="fas fa-users-slash"></i>
+                <p>No users found</p>
+            </div>
+        </div>
+    </main>
+
+    <div class="notification success" id="success-notification">
+        <i class="fas fa-check-circle"></i>
+        <span>Operation completed successfully!</span>
+    </div>
+    
+    <div class="notification error" id="error-notification">
+        <i class="fas fa-exclamation-circle"></i>
+        <span>An error occurred. Please try again.</span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Function to fetch and display users
+            function fetchUsers() {
+                // Get stored credentials from session storage
+                const authHeader = sessionStorage.getItem('authHeader');
+                
+                if (!authHeader) {
+                    // Redirect to login if not authenticated
+                    window.location.href = '/login';
+                    return;
+                }
+                
+                fetch('/api/users', {
+                    headers: {
+                        'Authorization': authHeader
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else if (response.status === 401) {
+                        // Unauthorized, redirect to login
+                        window.location.href = '/login';
+                        throw new Error('Authentication required');
+                    } else {
+                        throw new Error('Failed to fetch users');
+                    }
+                })
+                .then(users => {
+                    displayUsers(users);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('error', 'Failed to load users');
+                });
+            }
+            
+            // Function to display users in the table
+            function displayUsers(users) {
+                const tableBody = document.getElementById('users-body');
+                const emptyState = document.getElementById('empty-state');
+                
+                // Clear existing rows
+                tableBody.innerHTML = '';
+                
+                if (users.length === 0) {
+                    // Show empty state if no users
+                    emptyState.style.display = 'flex';
+                    return;
+                }
+                
+                emptyState.style.display = 'none';
+                
+                // Add a row for each user
+                users.forEach(user => {
+                    const row = document.createElement('tr');
+                    
+                    // Get initials for avatar
+                    const initials = user.username.charAt(0).toUpperCase();
+                    
+                    row.innerHTML = `
+                        <td>
+                            <div class="user-info">
+                                <div class="user-avatar">${initials}</div>
+                                <span>${user.username}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="status active">Active</span>
+                        </td>
+                        <td class="actions">
+                            <button class="action-btn" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    
+                    tableBody.appendChild(row);
+                });
+                
+                // Add event listeners to action buttons
+                document.querySelectorAll('.action-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        alert('This action is not implemented in this demo');
+                    });
+                });
+            }
+            
+            // Function to show notifications
+            function showNotification(type, message) {
+                const notification = document.getElementById(type + '-notification');
+                
+                // Update message if provided
+                if (message) {
+                    notification.querySelector('span').textContent = message;
+                }
+                
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+            
+            // Initialize - fetch users on page load
+            fetchUsers();
+            
+            // Set up refresh button
+            document.getElementById('refresh-btn').addEventListener('click', fetchUsers);
+            
+            // Handle logout
+            document.getElementById('logout').addEventListener('click', function(e) {
+                e.preventDefault();
+                sessionStorage.removeItem('authHeader');
+                window.location.href = '/login';
+            });
+        });
+    </script>
+</body>
+</html>

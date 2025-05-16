@@ -1,0 +1,11 @@
+/* styles.css */
+/* There are four types of styling in React as follows:
+1) This is first Styling Css Stylesheets    
+2)Inline styling
+3)Css Modules
+4)css in Js libaries */
+.primary {
+  color: blue;
+  font-size: 2rem;
+  text-align: center;
+}
